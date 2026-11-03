@@ -1,15 +1,31 @@
 <!doctype html>
 <html lang="ja">
-  <meta charset="utf-8" /><title>音声入力</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>音声入力</title>
   <h1>音声入力</h1>
+  <p><strong>Google Chromeと、TailscaleによるHTTPS接続を前提とした拡張です。</strong></p>
   <p>
     チャット入力欄のマイクボタンで音声入力できます。認識した文章は下書きへ反映され、自動送信されません。
   </p>
   <p>
-    リモート利用はTailscale
-    ServeのHTTPS接続を前提としています。HTTP接続では通常の文字入力を利用してください。
+    音声認識にはChromeが提供するWeb Speech APIを利用します。
+    独自の音声認識サーバーは不要です。認識時に音声がChromeの音声認識サービスへ送信される場合があります。
+  </p>
+  <h2>はじめて使うとき</h2>
+  <ol>
+    <li>セットアップ会話の案内に従い、必要な設定を確認・承認します。</li>
+    <li>別端末から使う場合は同じTailscaleネットワークへ接続し、案内されたHTTPS URLをChromeで開きます。</li>
+    <li>チャット入力欄のマイクを押し、Chromeのマイク使用許可を選んで話します。</li>
+    <li>下書きの文章を確認してから、自分で送信します。</li>
+  </ol>
+  <p>
+    Tailscaleへ接続していても、HTTPのIPアドレスを開くだけでは音声入力は利用できません。
+    Tailscale ServeのHTTPS URLを使ってください。同じ端末のlocalhostで試す場合はHTTPS設定は不要です。
   </p>
   <p>
-    対応状況はブラウザ・OSによって異なります。音声はブラウザ提供元の認識サービスへ送信される場合があります。
+    ChromeでもOS・端末・設定によっては利用できません。ほかのブラウザは動作保証の対象外です。
+    マイクを許可できない場合や非対応環境では、通常の文字入力を利用してください。
+    拡張とXangiサーバーは音声データを受信しません。
   </p>
 </html>

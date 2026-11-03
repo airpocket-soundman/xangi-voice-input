@@ -1,29 +1,36 @@
-# 音声入力の導入ガイド（セットアップ担当エージェント向け）
+# Voice input setup guide for setup agents
 
-ユーザーが設定値やコマンドを調べず、内容の確認と承認で導入できるように進める。
-既に承認された操作を繰り返し確認しない。
+English | [日本語](XANGI_SETUP.ja.md)
 
-1. この拡張のREADMEとmanifestを読み、実行中のXangiがcomposer.input対応であることを確認する。
-   `xangi extension link`と`xangi extension start`を、対象のXangiの環境で実行する。
-2. 現在のブラウザ接続が信頼されたHTTPSなら追加のHTTPS設定は不要。
-   同じ端末のlocalhostだけで使う場合も不要。別端末からHTTPで利用する場合だけ以下へ進む。
-3. Xangiが稼働するホスト、そのHTTP待受アドレスとポートを現在の設定から特定する。
-   Dockerではホストへ公開されたXangiのポートを使い、以下の設定コマンドもホスト側で実行する。
-   不明な場合は推測して設定せず接続先だけ質問する。URL、端末名、IPはリポジトリへ保存しない。
-4. `node src/setup-https.mjs --target <このホストのXangi HTTP URL> --check`を実行する。
-   このスクリプトは現在のTailscale端末のDNS名を検出し、既存の適切なHTTPS入口を再利用するか、
-   未使用ポートを選ぶ。別のtailnetへ切り替えたり、他のServe設定を変更したりしない。
-5. Tailscale未導入ならOSに合う公式導入方法を案内し、インストールの承認を得て準備する。
-   ログインは公式の認証画面を本人に開いてもらう。パスワードや認証キーをチャットへ要求しない。
-   利用する端末も同じtailnetへの接続が必要。複数のアカウントがある場合は本人に選んでもらう。
-6. 新規設定が必要な場合は「このXangiを同じTailscaleネットワークからHTTPSで開けるよう設定します」
-   と検出したURLを示して承認を受ける。承認後、同じコマンドを`--check`の代わりに`--yes`で実行する。
-   HTTPSの有効化URLが表示されたら本人に開いて承認してもらい、再実行する。
-   OS管理者権限が必要なら、その操作を説明して承認を受ける。FunnelやServeのresetは実行しない。
-7. 生成されたHTTPS URLへ証明書検証を有効にしてアクセスし、Xangiが表示されることを確認する。
-   到達確認に失敗した場合は完了と伝えず、待受設定・転送先・アクセス権を確認する。
-8. 最後にユーザーへHTTPS URLを示し、「このURLを開き、マイクを押してブラウザの使用許可を選んでください」
-   と案内する。音声入力は自動送信しない。実音声認識の成功は本人の端末で確認してもらう。
+Guide users through review and approval without requiring them to research settings or commands.
+Do not request approval again for an operation already approved in the current session.
 
-拡張の有効化だけでOSやTailscaleの許可が自動付与されるわけではない。
-この手順を読むセットアップエージェントによる確認・設定が必要。通常起動時にServe設定は変更しない。
+First explain that this extension uses Google Chrome's speech recognition, and remote access requires HTTPS through Tailscale Serve.
+Do not guarantee support in other browsers or on every OS and device.
+Explain that audio may be sent to Chrome's speech recognition service.
+Recognition uses Japanese (`ja-JP`); English documentation does not change the language or localize the interface.
+
+1. Read the README and manifest. Confirm that the running Xangi supports `composer.input`.
+   Run `xangi extension link` and `xangi extension start` in the environment targeting that Xangi instance.
+2. Trusted HTTPS needs no additional HTTPS setup. Localhost use on the same device also needs none.
+   Continue below only for HTTP access from another device.
+3. Identify the Xangi host and its actual HTTP listening address and port from the current configuration.
+   For Docker, use the host-published port and run the commands below on the host.
+   Ask for the target if unknown rather than guessing. Do not save environment-specific URLs, hostnames, or IP addresses in the repository.
+4. Run `node src/setup-https.mjs --target <this host's Xangi HTTP URL> --check`.
+   The helper detects the current Tailscale DNS name and reuses a suitable HTTPS endpoint or selects an unused port.
+   Do not switch tailnets or modify other Serve settings.
+5. If Tailscale is missing, explain the official OS-specific installation method and obtain approval before installing.
+   Ask the user to sign in through the official authentication page. Never request passwords or authentication keys in chat.
+   The client must also connect to the same tailnet. Let the user choose if multiple accounts are available.
+6. If a new endpoint is needed, show its URL and explain that this Xangi will become accessible over HTTPS within the same tailnet.
+   Obtain approval, then rerun with `--yes` instead of `--check`.
+   If an HTTPS activation URL appears, ask the user to open it and approve activation, then rerun.
+   Explain and obtain approval for OS administrator operations. Do not enable Funnel or reset Serve.
+7. Open the resulting HTTPS URL with certificate verification enabled and confirm Xangi is available.
+   If verification fails, inspect listening settings, the upstream target, and permissions. Do not report completion.
+8. Give the user the HTTPS URL and ask them to open it in Google Chrome, press the microphone, and allow microphone access.
+   Recognition never sends the draft automatically. Ask the user to verify actual recognition on their device.
+
+Enabling the extension does not automatically grant OS or Tailscale permissions.
+A setup agent must inspect and configure the environment. Normal startup does not change Serve settings.

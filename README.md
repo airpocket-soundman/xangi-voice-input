@@ -1,89 +1,137 @@
 # xangi-voice-input
 
-Xangiのチャット入力欄から、キーボードを開かずに日本語を音声入力する拡張です。
-認識した文章は下書きへ反映し、自動送信しません。
+English | [日本語](README.ja.md)
 
-**開発中:** Xangi本体の `composer.input` 連携が必要です。未対応の本体では拡張の説明画面のみ利用できます。
+Enter Japanese text into Xangi's chat composer by speaking, without opening the keyboard.
+Recognized text is added to your draft and is never sent automatically.
 
-## 使い方
+> **Requirements: Google Chrome and HTTPS through Tailscale.**
+>
+> This extension uses Chrome's speech recognition through the Web Speech API.
+> From a phone or another computer, open the HTTPS URL provided by Tailscale Serve in Chrome.
+> Connecting to Tailscale and opening an IP address over `http://` is not enough to enable voice input.
 
-マイクを押して話すと、発話の区切りで停止します。途中で止める場合はもう一度マイクを押します。
-確定前の文章は状態表示だけに出し、確定結果を下書きに反映します。認識結果が更新された場合は、
-今回の発話部分を置き換えるため、途中の同じ文章を重複して追加しません。
+**Under development:** Xangi must support `composer.input`. Unsupported versions can only display the extension's information page.
 
-手入力、会話やペインの切り替え、バックグラウンド移行で録音を終了します。録音中は送信を停止し、
-通常の手入力へ戻れます。拡張を停止すると、約5秒以内に入力欄のマイクが消えます。
+## Supported environment
 
-対応状況はブラウザとOSに依存します。Chromeであってもすべての環境で動作するとは限りません。
-音声はブラウザ提供元の音声認識サービスへ送信される場合があります。
-この拡張とXangiサーバーは音声データを受信せず、音声アップロード用APIも提供しません。
+| Component | Requirement |
+| --- | --- |
+| Browser | Google Chrome with microphone permission. Other browsers are outside the supported configuration. |
+| Remote access | Server and client connected to the same Tailscale network (tailnet), using a Tailscale Serve HTTPS URL. |
+| Recognition | Chrome's Web Speech API (`SpeechRecognition` / `webkitSpeechRecognition`). No separate recognition server is needed. |
+| Xangi | A version supporting `composer.input`. The extension alone does not add composer support to Xangi. |
+| Language | Japanese (`ja-JP`). English documentation does not change the recognition language or translate the interface. |
 
-## インストール
+Availability depends on OS, device, and browser settings, even in Chrome.
+The Chrome name alone does not guarantee support, including on iPhone and iPad.
+Check microphone permissions and actual recognition on the device you intend to use.
 
-Xangiのセットアップエージェントから導入する場合は、`XANGI_SETUP.md`に沿って案内します。
-エージェントが現在の環境を確認し、必要な場合はTailscaleのHTTPS設定を提案します。
-利用者は設定内容の確認、Tailscaleのログイン・HTTPS有効化、ブラウザのマイク許可を行います。
-拡張を有効にするだけでこれらの許可が自動付与されるわけではありません。
+## Getting started
 
-Node.js 22以上、POSIXホスト（Linux/macOS）、`composer.input` 対応版Xangiが必要です。
-追加のnpm依存パッケージは不要です。
+1. In Xangi's Extensions page, add [this public repository](https://github.com/airpocket-soundman/xangi-voice-input).
+2. Follow the setup conversation and review and approve the necessary settings.
+3. For remote access, connect to Tailscale and open the provided **HTTPS URL in Chrome**.
+4. Press the microphone in the chat composer and allow Chrome to use your microphone.
+5. Speak Japanese, review your draft, and send it yourself.
+
+Installing Tailscale, signing in, and enabling HTTPS for the first time may require your interaction.
+Adding the extension does not automatically grant OS or browser permissions.
+Testing through `localhost` on the same device does not require Tailscale HTTPS setup.
+
+## Usage and privacy
+
+Press the microphone to start. Recognition stops at the end of an utterance; press again to stop early.
+Interim text appears only as status text. Final text is applied to the draft.
+Updated recognition results replace the current utterance instead of repeatedly appending it.
+
+Typing, switching conversations or panes, or moving the page to the background ends recognition.
+Sending is disabled during recognition. Normal keyboard input remains available.
+Stopping the extension removes the microphone from the composer within about five seconds.
+
+Audio may be sent to Chrome's speech recognition service. Offline recognition is not guaranteed.
+This extension and the Xangi server do not receive audio or provide an audio upload API.
+
+## Installation
+
+Xangi's setup agent follows [XANGI_SETUP.md](XANGI_SETUP.md), inspects the environment,
+and proposes Tailscale HTTPS setup when needed. You review the settings, sign in, approve HTTPS activation,
+and grant microphone permission as needed. Enabling the extension does not automatically grant these permissions.
+
+Manual installation requires Node.js 22 or later, a POSIX host (Linux/macOS), and a compatible Xangi version.
+No additional npm packages are required.
 
 ```sh
 git clone https://github.com/airpocket-soundman/xangi-voice-input.git
 cd xangi-voice-input
 chmod +x scripts/xangi-extension
 xangi extension link "$PWD/xangi-extension.json"
-# 同じ実行中のXangiへ接続する環境（XANGI_TOOL_SERVER設定済み）で実行
+# Target the same running Xangi instance (XANGI_TOOL_SERVER must be set).
 xangi extension start xangi-voice-input
 ```
 
-起動後はXangiの拡張管理画面から停止・起動できます。リンク時は自動起動が有効になります。
-サービスは127.0.0.1にだけ待ち受け、すべてのリクエストにXangiの管理用Bearer認証を要求します。
-ブラウザにはBearerトークンを渡しません。
+Use Xangi's extension management page to stop or start the extension. Linking enables automatic startup.
+The service listens only on `127.0.0.1` and requires Xangi's management Bearer token for every request.
+The token is never passed to the browser.
 
-## HTTPS: Tailscale前提
+## HTTPS through Tailscale
 
-リモート利用のサポート対象は、同じtailnetの端末からTailscale ServeのHTTPS URLで接続する構成です。
-例えば、Xangiが127.0.0.1:18888で待ち受けているホストでは、管理者が次のように設定します。
+The supported remote configuration uses Tailscale Serve HTTPS within the same tailnet.
+For example, when Xangi listens on `127.0.0.1:18888`, an administrator can configure:
 
 ```sh
 tailscale serve --bg --https=18889 http://127.0.0.1:18888
 ```
 
-実際の待ち受けアドレスに合わせて設定し、Tailscaleが表示するHTTPS URLを使ってください。
-Serveはtailnet内で使用し、Funnelによる外部公開は必要ありません。既存のServe設定は保持してください。
-自己署名証明書や独自CAの導入は不要です。
+Use the actual listening address and open the HTTPS URL printed by Tailscale.
+Keep access within the tailnet; Funnel public exposure is unnecessary. Preserve existing Serve settings.
+No self-signed certificates or private certificate authority are needed.
 
-導入ガイドでは、接続済みのTailscale端末のDNS名と既存のServe設定を確認し、承認後にHTTPS入口を設定できます。
-手動で進める場合も、Xangiのホスト上で次の対話式コマンドを利用できます。転送先は実際の待受先に合わせてください。
+Guided setup detects the connected device's DNS name and existing Serve settings, then configures HTTPS after approval.
+For manual setup, run this interactive command on the Xangi host with the actual upstream address:
 
 ```sh
 npm run setup:https -- --target http://127.0.0.1:18888
 ```
 
-`--check`で変更前の確認のみ、`--yes`で承認済みの設定を実行できます。
-既存の適切なHTTPS入口は再利用し、他の入口が使うポートは避けます。Funnelは有効にしません。
-Tailscaleのインストールとログインは別途必要です。Dockerの場合はコンテナではなくホストで実行します。
-HTTPS初回有効化や管理者権限が必要な場合は、表示された案内に従って承認後に再実行します。
-通常の拡張起動時には、OSやServe設定を変更しません。
-LAN内のHTTP接続では音声入力を無効にし、通常の文字入力を利用できます。
-localhostでの開発や、ほかの有効なHTTPS接続を意図的に拒否することはありません。
+Use `--check` to inspect without changes, or `--yes` to apply a previously approved setup.
+The helper reuses a suitable HTTPS endpoint and avoids ports used by existing Serve listeners. It does not enable Funnel.
+Tailscale installation and sign-in are separate steps. For Docker, run the helper on the host, not inside the container.
+If HTTPS activation or administrator privileges are required, follow the instructions, approve the operation, and rerun it.
+Normal extension startup does not change OS or Serve settings.
 
-## 構成とテスト
+Voice input is disabled on insecure LAN HTTP connections; keyboard input remains available.
+Localhost development and other valid HTTPS connections are not intentionally blocked, although Tailscale is the supported remote setup.
 
-`src/extension.mjs` はXangi管理下で静的な操作画面を配信します。
-`public/voice.js` がブラウザのWeb Speech APIを操作し、本体へテキストのスナップショットを渡します。
-本体の認識API実装や、独自の音声認識サーバーは不要です。
+## Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| No microphone button | Confirm Xangi supports `composer.input` and the extension is running and healthy. |
+| HTTP warning | Open the Tailscale Serve `https://` URL. HTTP access to a Tailscale IP is insufficient. |
+| Unsupported browser | Open in Google Chrome. Some devices do not expose the API even in Chrome. |
+| Microphone permission error | Allow microphone access in Chrome's site settings and OS settings. |
+| Recognition service connection error | Check network connectivity and restrictions on the browser's speech recognition service. |
+| HTTPS URL does not open | Check client tailnet connectivity, Tailscale access permissions, and Serve settings. |
+
+Normal keyboard input remains available when voice input cannot be used.
+
+## Development and tests
+
+`src/extension.mjs` serves the UI under Xangi's management.
+`public/voice.js` controls the Web Speech API and sends text snapshots to Xangi.
+No server-side recognition engine or API is required.
 
 ```sh
 npm test
-# composer.input対応のXangiチェックアウトで npm ci を済ませて実行:
+# First run npm ci in a Xangi checkout with composer.input support:
 XANGI_CORE_PATH=/path/to/xangi XANGI_TEST_CHROMIUM=/path/to/chromium npm run test:browser
 ```
 
-ブラウザテストは実際の本体ChatPane・管理サービス・iframeを使い、認識エンジンだけを模擬します。
-累積結果の重複防止、手入力との切り替え、停止時の確定、会話切り替え後の古い結果、権限拒否、
-背景移行、拡張の除去、非対応API、HTTP時の代替入力、スマホ幅を確認します。
-実マイクでの認識品質と各OSでの対応状況は、実機で別途確認してください。
+Browser tests use the actual ChatPane, management service, and iframe, with the recognition engine mocked.
+They cover duplicate cumulative results, keyboard input, finalization on stop, stale results after conversation changes,
+permission denial, backgrounding, extension removal, unsupported APIs, HTTP fallback, and a mobile viewport.
+Verify real microphone recognition and OS behavior separately on actual devices.
 
-入力連携は信頼済みの同一オリジン拡張向けです。iframeを悪意あるコードの隔離境界としては扱いません。
+Composer integration is for trusted extensions on the same origin.
+The iframe is not a security boundary for isolating malicious extension code.
