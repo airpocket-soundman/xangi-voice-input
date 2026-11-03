@@ -10,7 +10,7 @@ Do not guarantee support in other browsers or on every OS and device.
 Explain that audio may be sent to Chrome's speech recognition service.
 Recognition uses Japanese (`ja-JP`); English documentation does not change the language or localize the interface.
 
-1. Read the README and manifest. Confirm that the running Xangi supports `composer.input`.
+1. Read the README and manifest. Confirm that the running Xangi supports `ui.composer` and the `draft.snapshot` host capability.
    Run `xangi extension link` and `xangi extension start` in the environment targeting that Xangi instance.
 2. Trusted HTTPS needs no additional HTTPS setup. Localhost use on the same device also needs none.
    Continue below only for HTTP access from another device.

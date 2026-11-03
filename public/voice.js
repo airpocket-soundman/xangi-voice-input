@@ -6,13 +6,16 @@ const unavailable = !window.isSecureContext
     ? 'このブラウザでは音声入力を利用できません。'
     : '';
 let configuration, session;
+const compatible = (message) =>
+  Array.isArray(message.capabilities) && message.capabilities.includes('draft.snapshot');
 const post = (message) =>
   parent.postMessage(
     { schemaVersion: 1, contextId: configuration?.contextId, ...message },
     location.origin
   );
 const render = () => {
-  button.disabled = !configuration || configuration.disabled || Boolean(unavailable);
+  button.disabled =
+    !configuration || !compatible(configuration) || configuration.disabled || Boolean(unavailable);
   button.setAttribute('aria-pressed', String(Boolean(session)));
   button.setAttribute('aria-label', session ? '音声入力を停止' : '音声入力を開始');
   button.title = unavailable || (session ? '音声入力を停止' : '音声入力を開始');
@@ -66,10 +69,18 @@ window.addEventListener('message', (event) => {
   if (configuration?.contextId !== m.contextId || m.disabled) cancel();
   configuration = m;
   render();
+  if (!compatible(m)) {
+    cancel();
+    post({
+      type: 'xangi.composer.availability',
+      message: '入力欄拡張に対応したXangiへ更新してください。',
+    });
+    return;
+  }
   post({ type: 'xangi.composer.availability', message: unavailable });
 });
 button.addEventListener('click', () => {
-  if (!configuration || configuration.disabled || unavailable) return;
+  if (!configuration || !compatible(configuration) || configuration.disabled || unavailable) return;
   if (session) {
     const s = session;
     if (s.stopping) return;

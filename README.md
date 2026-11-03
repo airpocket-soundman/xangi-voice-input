@@ -11,7 +11,9 @@ Recognized text is added to your draft and is never sent automatically.
 > From a phone or another computer, open the HTTPS URL provided by Tailscale Serve in Chrome.
 > Connecting to Tailscale and opening an IP address over `http://` is not enough to enable voice input.
 
-**Under development:** Xangi must support `composer.input`. Unsupported versions can only display the extension's information page.
+**Under development:** Xangi must support `ui.composer` contributions and advertise `draft.snapshot`. The extension does not patch or rebuild Xangi. Older hosts can only display the information page.
+
+The generic host interface is described in [Composer contribution protocol](docs/composer-protocol.md).
 
 ## Supported environment
 
@@ -20,7 +22,7 @@ Recognized text is added to your draft and is never sent automatically.
 | Browser | Google Chrome with microphone permission. Other browsers are outside the supported configuration. |
 | Remote access | Server and client connected to the same Tailscale network (tailnet), using a Tailscale Serve HTTPS URL. |
 | Recognition | Chrome's Web Speech API (`SpeechRecognition` / `webkitSpeechRecognition`). No separate recognition server is needed. |
-| Xangi | A version supporting `composer.input`. The extension alone does not add composer support to Xangi. |
+| Xangi | A version supporting `ui.composer` and `draft.snapshot`. The extension alone does not add composer support to Xangi. |
 | Language | Japanese (`ja-JP`). English documentation does not change the recognition language or translate the interface. |
 
 Availability depends on OS, device, and browser settings, even in Chrome.
@@ -29,7 +31,7 @@ Check microphone permissions and actual recognition on the device you intend to 
 
 ## Getting started
 
-1. In Xangi's Extensions page, add [this public repository](https://github.com/airpocket-soundman/xangi-voice-input).
+1. In Xangi's Extensions page, add [this public repository](https://github.com/karaage0703/xangi-voice-input).
 2. Follow the setup conversation and review and approve the necessary settings.
 3. For remote access, connect to Tailscale and open the provided **HTTPS URL in Chrome**.
 4. Press the microphone in the chat composer and allow Chrome to use your microphone.
@@ -47,7 +49,7 @@ Updated recognition results replace the current utterance instead of repeatedly 
 
 Typing, switching conversations or panes, or moving the page to the background ends recognition.
 Sending is disabled during recognition. Normal keyboard input remains available.
-Stopping the extension removes the microphone from the composer within about five seconds.
+Reload the chat or return focus to its window after installing, starting, or stopping an extension. Xangi does not poll the extension catalog in the background.
 
 Audio may be sent to Chrome's speech recognition service. Offline recognition is not guaranteed.
 This extension and the Xangi server do not receive audio or provide an audio upload API.
@@ -62,7 +64,7 @@ Manual installation requires Node.js 22 or later, a POSIX host (Linux/macOS), an
 No additional npm packages are required.
 
 ```sh
-git clone https://github.com/airpocket-soundman/xangi-voice-input.git
+git clone https://github.com/karaage0703/xangi-voice-input.git
 cd xangi-voice-input
 chmod +x scripts/xangi-extension
 xangi extension link "$PWD/xangi-extension.json"

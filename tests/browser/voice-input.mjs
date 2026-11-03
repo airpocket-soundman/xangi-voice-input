@@ -25,6 +25,8 @@ const errors = [];
 const mock = String.raw`
   window.__speechSessions=[];
   window.__composerBegins=[];
+  window.__composerConfigs=[];
+  window.addEventListener('message',e=>{if(e.data?.type==='xangi.composer.configure')window.__composerConfigs.push(e.data);});
   window.addEventListener('message',e=>{if(e.data?.type==='xangi.composer.begin')window.__composerBegins.push(e.data);});
   class FakeSpeechRecognition {
     constructor(){window.__speechSessions.push(this);}
@@ -276,6 +278,8 @@ try {
   );
   await wait('window.__hiddenSpeech.aborted');
   await evaluate('Object.defineProperty(document,"hidden",{configurable:true,value:false})');
+  await evaluate(`(()=>{const f=document.querySelector('iframe.composer-extension-frame');const c=f.contentWindow.__composerConfigs.at(-1);f.contentWindow.postMessage({...c, capabilities:undefined},location.origin);})()`);
+  await wait('document.querySelector(".pane-voice-btn").disabled');
   for (const mode of ['prefixed', 'unsupported', 'insecure']) {
     await send('Page.navigate', { url: preview.url + '?mode=' + mode });
     await wait(
@@ -327,6 +331,7 @@ try {
         ok: true,
         checks: [
           'real ChatPane with managed extension iframe',
+          'host capability compatibility check',
           'message source/origin/context/request/revision validation',
           'extension removal restores ordinary input',
           'Japanese recognition settings',
