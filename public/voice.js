@@ -68,6 +68,26 @@ window.addEventListener('message', (event) => {
     return;
   if (configuration?.contextId !== m.contextId || m.disabled) cancel();
   configuration = m;
+  const appearance = m.appearance;
+  if (appearance && typeof appearance === 'object') {
+    if (appearance.colorScheme === 'light' || appearance.colorScheme === 'dark')
+      document.documentElement.style.colorScheme = appearance.colorScheme;
+    const properties = {
+      foreground: ['--composer-foreground', 'color'],
+      hoverBackground: ['--composer-hover', 'background-color'],
+      focusColor: ['--composer-focus', 'color'],
+      buttonSize: ['--composer-button-size', 'width'],
+      iconSize: ['--composer-icon-size', 'width'],
+      strokeWidth: ['--composer-stroke-width', 'stroke-width'],
+      borderRadius: ['--composer-button-radius', 'border-radius'],
+      disabledOpacity: ['--composer-disabled-opacity', 'opacity'],
+    };
+    for (const [key, [variable, property]] of Object.entries(properties)) {
+      const value = appearance[key];
+      if (typeof value === 'string' && CSS.supports(property, value))
+        document.documentElement.style.setProperty(variable, value);
+    }
+  }
   render();
   if (!compatible(m)) {
     cancel();

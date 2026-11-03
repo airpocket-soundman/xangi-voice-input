@@ -57,3 +57,7 @@ Keep the normal information page and declare a separate input widget:
 A canned-reply extension can declare its own capability and widget path, omit permissions, and send `xangi.composer.insert` with a fresh request ID and text. No recognition engine, microphone permission, or begin/end messages are needed. The host acknowledges it with a new configure context; wait for that configuration before another action. The host never sends the draft to the widget.
 
 The host discovers contributions on chat load and window focus, without periodic polling. Reload or refocus after extension installation, start, stop, or removal. Stopping a service while its window stays focused is not detected immediately.
+
+## Appearance
+
+Configure messages may include `appearance`: `colorScheme`, `foreground`, `hoverBackground`, `focusColor`, `buttonSize`, `iconSize`, `strokeWidth`, `borderRadius`, and `disabledOpacity`. These are CSS values from the host's input controls. Widgets keep their own SVG artwork and apply the shared values to match adjacent controls. Theme updates preserve the current operation and context. Hosts without this optional field use the widget's fallback styles.
