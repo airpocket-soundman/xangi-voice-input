@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "id": "xangi-voice-input",
+  "displayName": "音声入力",
+  "description": "ブラウザの音声認識でチャットの下書きを入力します。",
+  "permissions": [
+    "ブラウザのマイク（ユーザーの許可が必要）",
+    "ブラウザ提供元の音声認識サービスへの通信"
+  ],
+  "version": "0.1.0",
+  "entrypoint": "scripts/xangi-extension",
+  "runtime": { "kind": "managed-http" },
+  "ui": { "capability": "composer.input", "path": "/" },
+  "capabilities": [{ "id": "composer.input", "protocol": "http", "healthPath": "/health" }]
+}

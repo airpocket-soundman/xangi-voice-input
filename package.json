@@ -1,0 +1,13 @@
+{
+  "name": "xangi-voice-input",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser speech input for the Xangi chat composer",
+  "engines": { "node": ">=22" },
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/service.test.mjs",
+    "test:browser": "node tests/browser/voice-input.mjs"
+  }
+}

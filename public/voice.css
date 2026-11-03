@@ -1,0 +1,45 @@
+:root {
+  color-scheme: light dark;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
+  color: light-dark(#555, #ddd);
+  background: transparent;
+  cursor: pointer;
+}
+button:hover {
+  background: light-dark(#eee, #333);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+button[aria-pressed='true'] {
+  color: #e54d57;
+  background: #e54d5720;
+}
+svg {
+  display: block;
+  transform: translateY(2px);
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
