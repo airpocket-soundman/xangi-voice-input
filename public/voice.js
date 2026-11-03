@@ -73,7 +73,7 @@ window.addEventListener('message', (event) => {
     cancel();
     post({
       type: 'xangi.composer.availability',
-      message: '入力欄拡張に対応したXangiへ更新してください。',
+      message: '入力欄拡張に対応したxangiへ更新してください。',
     });
     return;
   }

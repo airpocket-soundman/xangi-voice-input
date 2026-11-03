@@ -5,15 +5,15 @@ This interface also supports non-voice extensions such as canned replies and asy
 This repository implements an optional voice-input consumer. Install it by repository URL; the host does not need a voice-specific catalog entry.
 It uses Google Chrome's speech recognition for Japanese input; remote use assumes Tailscale Serve HTTPS.
 Installation, microphone permissions, and optional HTTPS setup are described in the extension repository.
-Xangi itself does not run a speech recognition engine or receive audio.
+xangi itself does not run a speech recognition engine or receive audio.
 
 ## Protocol
 
-Xangi loads `/api/extensions/<id>/service<ui.composer.path>` in a same-origin iframe.
+xangi loads `/api/extensions/<id>/service<ui.composer.path>` in a same-origin iframe.
 Only declared `ui.composer.permissions` are granted (currently `microphone` is supported).
 The ordinary extension UI at `ui.path` is unchanged.
 Every message uses `schemaVersion: 1`. Both sides must validate origin and source window.
-Extensions announce `xangi.composer.ready`. Xangi responds with `xangi.composer.configure`,
+Extensions announce `xangi.composer.ready`. xangi responds with `xangi.composer.configure`,
 containing a `contextId`, `disabled` flag and `capabilities: ["draft.insert", "draft.snapshot"]`. Extensions must cancel work when the context changes or they are disabled.
 
 Extension messages include the current `contextId`:

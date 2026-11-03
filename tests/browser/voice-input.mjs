@@ -196,17 +196,17 @@ try {
     await evaluate('document.querySelector(".pane-input").value'),
     '既存の文章\nこんにちは このザンギ'
   );
-  await result([['こんにちは このXangi側で調整できますか', true]]);
+  await result([['こんにちは このxangi側で調整できますか', true]]);
   await wait(
-    'document.querySelector(".pane-input").value==="既存の文章\\nこんにちは このXangi側で調整できますか"'
+    'document.querySelector(".pane-input").value==="既存の文章\\nこんにちは このxangi側で調整できますか"'
   );
   await result([
-    ['こんにちは このXangi側で調整できますか', true],
-    ['こんにちは このXangi側で調整できますか', true],
+    ['こんにちは このxangi側で調整できますか', true],
+    ['こんにちは このxangi側で調整できますか', true],
   ]);
   assert.equal(
     await evaluate('document.querySelector(".pane-input").value'),
-    '既存の文章\nこんにちは このXangi側で調整できますか'
+    '既存の文章\nこんにちは このxangi側で調整できますか'
   );
   await result([['はい、はい。', true]]);
   await wait('document.querySelector(".pane-input").value==="既存の文章\\nはい、はい。"');

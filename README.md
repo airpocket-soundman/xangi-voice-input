@@ -2,7 +2,7 @@
 
 English | [日本語](README.ja.md)
 
-Enter Japanese text into Xangi's chat composer by speaking, without opening the keyboard.
+Enter Japanese text into xangi's chat composer by speaking, without opening the keyboard.
 Recognized text is added to your draft and is never sent automatically.
 
 > **Requirements: Google Chrome and HTTPS through Tailscale.**
@@ -11,7 +11,7 @@ Recognized text is added to your draft and is never sent automatically.
 > From a phone or another computer, open the HTTPS URL provided by Tailscale Serve in Chrome.
 > Connecting to Tailscale and opening an IP address over `http://` is not enough to enable voice input.
 
-**Under development:** Xangi must support `ui.composer` contributions and advertise `draft.snapshot`. The extension does not patch or rebuild Xangi. Older hosts can only display the information page.
+**Under development:** xangi must support `ui.composer` contributions and advertise `draft.snapshot`. The extension does not patch or rebuild xangi. Older hosts can only display the information page.
 
 The generic host interface is described in [Composer contribution protocol](docs/composer-protocol.md).
 
@@ -22,7 +22,7 @@ The generic host interface is described in [Composer contribution protocol](docs
 | Browser | Google Chrome with microphone permission. Other browsers are outside the supported configuration. |
 | Remote access | Server and client connected to the same Tailscale network (tailnet), using a Tailscale Serve HTTPS URL. |
 | Recognition | Chrome's Web Speech API (`SpeechRecognition` / `webkitSpeechRecognition`). No separate recognition server is needed. |
-| Xangi | A version supporting `ui.composer` and `draft.snapshot`. The extension alone does not add composer support to Xangi. |
+| xangi | A version supporting `ui.composer` and `draft.snapshot`. The extension alone does not add composer support to xangi. |
 | Language | Japanese (`ja-JP`). English documentation does not change the recognition language or translate the interface. |
 
 Availability depends on OS, device, and browser settings, even in Chrome.
@@ -31,7 +31,7 @@ Check microphone permissions and actual recognition on the device you intend to 
 
 ## Getting started
 
-1. In Xangi's Extensions page, add [this public repository](https://github.com/karaage0703/xangi-voice-input).
+1. In xangi's Extensions page, add [this public repository](https://github.com/karaage0703/xangi-voice-input).
 2. Follow the setup conversation and review and approve the necessary settings.
 3. For remote access, connect to Tailscale and open the provided **HTTPS URL in Chrome**.
 4. Press the microphone in the chat composer and allow Chrome to use your microphone.
@@ -49,18 +49,18 @@ Updated recognition results replace the current utterance instead of repeatedly 
 
 Typing, switching conversations or panes, or moving the page to the background ends recognition.
 Sending is disabled during recognition. Normal keyboard input remains available.
-Reload the chat or return focus to its window after installing, starting, or stopping an extension. Xangi does not poll the extension catalog in the background.
+Reload the chat or return focus to its window after installing, starting, or stopping an extension. xangi does not poll the extension catalog in the background.
 
 Audio may be sent to Chrome's speech recognition service. Offline recognition is not guaranteed.
-This extension and the Xangi server do not receive audio or provide an audio upload API.
+This extension and the xangi server do not receive audio or provide an audio upload API.
 
 ## Installation
 
-Xangi's setup agent follows [XANGI_SETUP.md](XANGI_SETUP.md), inspects the environment,
+xangi's setup agent follows [XANGI_SETUP.md](XANGI_SETUP.md), inspects the environment,
 and proposes Tailscale HTTPS setup when needed. You review the settings, sign in, approve HTTPS activation,
 and grant microphone permission as needed. Enabling the extension does not automatically grant these permissions.
 
-Manual installation requires Node.js 22 or later, a POSIX host (Linux/macOS), and a compatible Xangi version.
+Manual installation requires Node.js 22 or later, a POSIX host (Linux/macOS), and a compatible xangi version.
 No additional npm packages are required.
 
 ```sh
@@ -68,18 +68,18 @@ git clone https://github.com/karaage0703/xangi-voice-input.git
 cd xangi-voice-input
 chmod +x scripts/xangi-extension
 xangi extension link "$PWD/xangi-extension.json"
-# Target the same running Xangi instance (XANGI_TOOL_SERVER must be set).
+# Target the same running xangi instance (XANGI_TOOL_SERVER must be set).
 xangi extension start xangi-voice-input
 ```
 
-Use Xangi's extension management page to stop or start the extension. Linking enables automatic startup.
-The service listens only on `127.0.0.1` and requires Xangi's management Bearer token for every request.
+Use xangi's extension management page to stop or start the extension. Linking enables automatic startup.
+The service listens only on `127.0.0.1` and requires xangi's management Bearer token for every request.
 The token is never passed to the browser.
 
 ## HTTPS through Tailscale
 
 The supported remote configuration uses Tailscale Serve HTTPS within the same tailnet.
-For example, when Xangi listens on `127.0.0.1:18888`, an administrator can configure:
+For example, when xangi listens on `127.0.0.1:18888`, an administrator can configure:
 
 ```sh
 tailscale serve --bg --https=18889 http://127.0.0.1:18888
@@ -90,7 +90,7 @@ Keep access within the tailnet; Funnel public exposure is unnecessary. Preserve 
 No self-signed certificates or private certificate authority are needed.
 
 Guided setup detects the connected device's DNS name and existing Serve settings, then configures HTTPS after approval.
-For manual setup, run this interactive command on the Xangi host with the actual upstream address:
+For manual setup, run this interactive command on the xangi host with the actual upstream address:
 
 ```sh
 npm run setup:https -- --target http://127.0.0.1:18888
@@ -109,7 +109,7 @@ Localhost development and other valid HTTPS connections are not intentionally bl
 
 | Symptom | What to check |
 | --- | --- |
-| No microphone button | Confirm Xangi supports `composer.input` and the extension is running and healthy. |
+| No microphone button | Confirm xangi supports `composer.input` and the extension is running and healthy. |
 | HTTP warning | Open the Tailscale Serve `https://` URL. HTTP access to a Tailscale IP is insufficient. |
 | Unsupported browser | Open in Google Chrome. Some devices do not expose the API even in Chrome. |
 | Microphone permission error | Allow microphone access in Chrome's site settings and OS settings. |
@@ -120,13 +120,13 @@ Normal keyboard input remains available when voice input cannot be used.
 
 ## Development and tests
 
-`src/extension.mjs` serves the UI under Xangi's management.
-`public/voice.js` controls the Web Speech API and sends text snapshots to Xangi.
+`src/extension.mjs` serves the UI under xangi's management.
+`public/voice.js` controls the Web Speech API and sends text snapshots to xangi.
 No server-side recognition engine or API is required.
 
 ```sh
 npm test
-# First run npm ci in a Xangi checkout with composer.input support:
+# First run npm ci in a xangi checkout with composer.input support:
 XANGI_CORE_PATH=/path/to/xangi XANGI_TEST_CHROMIUM=/path/to/chromium npm run test:browser
 ```
 

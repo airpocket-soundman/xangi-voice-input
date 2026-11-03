@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Browser speech input for the Xangi chat composer",
+  "description": "Browser speech input for the xangi chat composer",
   "engines": { "node": ">=22" },
   "license": "MIT",
   "scripts": {
