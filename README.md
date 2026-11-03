@@ -31,7 +31,7 @@ Check microphone permissions and actual recognition on the device you intend to 
 
 ## Getting started
 
-1. In xangi's Extensions page, add [this public repository](https://github.com/karaage0703/xangi-voice-input).
+1. In xangi's Extensions page, add [this public repository](https://github.com/airpocket-soundman/xangi-voice-input).
 2. Follow the setup conversation and review and approve the necessary settings.
 3. For remote access, connect to Tailscale and open the provided **HTTPS URL in Chrome**.
 4. Press the microphone in the chat composer and allow Chrome to use your microphone.
@@ -64,7 +64,7 @@ Manual installation requires Node.js 22 or later, a POSIX host (Linux/macOS), an
 No additional npm packages are required.
 
 ```sh
-git clone https://github.com/karaage0703/xangi-voice-input.git
+git clone https://github.com/airpocket-soundman/xangi-voice-input.git
 cd xangi-voice-input
 chmod +x scripts/xangi-extension
 xangi extension link "$PWD/xangi-extension.json"
