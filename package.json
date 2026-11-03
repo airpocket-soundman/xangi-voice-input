@@ -7,7 +7,8 @@
   "engines": { "node": ">=22" },
   "license": "MIT",
   "scripts": {
-    "test": "node --test tests/service.test.mjs",
+    "test": "node --test tests/service.test.mjs tests/setup-https.test.mjs",
+    "setup:https": "node src/setup-https.mjs",
     "test:browser": "node tests/browser/voice-input.mjs"
   }
 }
