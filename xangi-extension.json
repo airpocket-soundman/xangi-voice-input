@@ -11,6 +11,8 @@
   "setup": { "instructions": "XANGI_SETUP.md" },
   "entrypoint": "scripts/xangi-extension",
   "runtime": { "kind": "managed-http" },
-  "ui": { "capability": "composer.input", "path": "/" },
+  "ui": { "capability": "composer.input", "path": "/",
+    "composer": { "path": "/composer/", "permissions": ["microphone"] }
+  },
   "capabilities": [{ "id": "composer.input", "protocol": "http", "healthPath": "/health" }]
 }

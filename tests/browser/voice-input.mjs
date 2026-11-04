@@ -25,6 +25,8 @@ const errors = [];
 const mock = String.raw`
   window.__speechSessions=[];
   window.__composerBegins=[];
+  window.__composerConfigs=[];
+  window.addEventListener('message',e=>{if(e.data?.type==='xangi.composer.configure')window.__composerConfigs.push(e.data);});
   window.addEventListener('message',e=>{if(e.data?.type==='xangi.composer.begin')window.__composerBegins.push(e.data);});
   class FakeSpeechRecognition {
     constructor(){window.__speechSessions.push(this);}
@@ -148,6 +150,21 @@ try {
   await wait(
     'document.querySelector("iframe.composer-extension-frame")?.contentDocument?.querySelector("#mic")&&!document.querySelector(".pane-voice-btn").disabled'
   );
+  for (const width of [390, 1440]) {
+    await send('Emulation.setDeviceMetricsOverride', {width, height:844, deviceScaleFactor:1, mobile:width===390});
+    for (const theme of ['light', 'dark']) {
+      await evaluate(`document.documentElement.dataset.theme=${JSON.stringify(theme)};document.documentElement.style.colorScheme=${JSON.stringify(theme)}`);
+      await wait(`getComputedStyle(document.querySelector('iframe.composer-extension-frame').contentDocument.querySelector('#mic')).color===getComputedStyle(document.querySelector('.pane-attach-btn')).color`);
+      const metrics=await evaluate(`(()=>{const frame=document.querySelector('iframe.composer-extension-frame');const mic=frame.contentDocument.querySelector('#mic');return [document.querySelector('.pane-command-btn'),document.querySelector('.pane-attach-btn'),mic].map(b=>{const svg=b.querySelector('svg'),s=getComputedStyle(svg),r=b.getBoundingClientRect();return {width:r.width,height:r.height,iconWidth:s.width,iconHeight:s.height,stroke:s.strokeWidth,linecap:s.strokeLinecap,color:getComputedStyle(b).color};});})()`);
+      assert.deepEqual(metrics[0],metrics[1]);assert.deepEqual(metrics[1],metrics[2]);
+      const image=await send('Page.captureScreenshot',{format:'png'});
+      await writeFile(join(output, 'icons-'+theme+'-'+width+'.png'),Buffer.from(image.data,'base64'));
+      const clip=await evaluate(`(()=>{const r=document.querySelector('.pane-composer').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,scale:1};})()`);
+      const detail=await send('Page.captureScreenshot',{format:'png',clip});
+      await writeFile(join(output, 'icons-detail-'+theme+'-'+width+'.png'),Buffer.from(detail.data,'base64'));
+    }
+  }
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   await type('既存の文章');
   await evaluate('document.querySelector(".pane-input").focus()');
   await click('.pane-voice-btn');
@@ -157,6 +174,9 @@ try {
     false,
     'mic blurs the textarea'
   );
+  await evaluate(`window.__themeSpeech=window.__speechSessions.at(-1);document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'`);
+  await wait(`document.querySelector('iframe.composer-extension-frame').contentDocument.documentElement.style.colorScheme==='light'`);
+  assert.equal(await evaluate('window.__themeSpeech.aborted'),undefined,'theme changes do not cancel recognition');
   assert.equal(await evaluate('window.__speechSessions.at(-1).lang'), 'ja-JP');
   assert.equal(await evaluate('window.__speechSessions.at(-1).continuous'), false);
   await wait('document.querySelector(".pane-send").disabled');
@@ -194,17 +214,17 @@ try {
     await evaluate('document.querySelector(".pane-input").value'),
     '既存の文章\nこんにちは このザンギ'
   );
-  await result([['こんにちは このXangi側で調整できますか', true]]);
+  await result([['こんにちは このxangi側で調整できますか', true]]);
   await wait(
-    'document.querySelector(".pane-input").value==="既存の文章\\nこんにちは このXangi側で調整できますか"'
+    'document.querySelector(".pane-input").value==="既存の文章\\nこんにちは このxangi側で調整できますか"'
   );
   await result([
-    ['こんにちは このXangi側で調整できますか', true],
-    ['こんにちは このXangi側で調整できますか', true],
+    ['こんにちは このxangi側で調整できますか', true],
+    ['こんにちは このxangi側で調整できますか', true],
   ]);
   assert.equal(
     await evaluate('document.querySelector(".pane-input").value'),
-    '既存の文章\nこんにちは このXangi側で調整できますか'
+    '既存の文章\nこんにちは このxangi側で調整できますか'
   );
   await result([['はい、はい。', true]]);
   await wait('document.querySelector(".pane-input").value==="既存の文章\\nはい、はい。"');
@@ -276,6 +296,8 @@ try {
   );
   await wait('window.__hiddenSpeech.aborted');
   await evaluate('Object.defineProperty(document,"hidden",{configurable:true,value:false})');
+  await evaluate(`(()=>{const f=document.querySelector('iframe.composer-extension-frame');const c=f.contentWindow.__composerConfigs.at(-1);f.contentWindow.postMessage({...c, capabilities:undefined},location.origin);})()`);
+  await wait('document.querySelector(".pane-voice-btn").disabled');
   for (const mode of ['prefixed', 'unsupported', 'insecure']) {
     await send('Page.navigate', { url: preview.url + '?mode=' + mode });
     await wait(
@@ -327,6 +349,9 @@ try {
         ok: true,
         checks: [
           'real ChatPane with managed extension iframe',
+          'host capability compatibility check',
+          'matching SVG geometry and colors in light/dark themes at mobile/desktop widths',
+          'theme changes preserve recording',
           'message source/origin/context/request/revision validation',
           'extension removal restores ordinary input',
           'Japanese recognition settings',

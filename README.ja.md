@@ -2,7 +2,7 @@
 
 [English](README.md) | 日本語
 
-Xangiのチャット入力欄から、キーボードを開かずに日本語を音声入力する拡張です。
+xangiのチャット入力欄から、キーボードを開かずに日本語を音声入力する拡張です。
 認識した文章は下書きへ反映し、自動送信しません。
 
 > **利用前に：Google Chromeと、TailscaleによるHTTPS接続を前提としています。**
@@ -11,7 +11,7 @@ Xangiのチャット入力欄から、キーボードを開かずに日本語を
 > スマートフォンや別のPCから使う場合は、Tailscale Serveで用意したHTTPS URLをChromeで開いてください。
 > Tailscaleへ接続していても、`http://`のIPアドレスを開くだけでは音声入力は使えません。
 
-**開発中:** Xangi本体の `composer.input` 連携が必要です。未対応の本体では拡張の説明画面のみ利用できます。
+**開発中:** xangi本体の `composer.input` 連携が必要です。未対応の本体では拡張の説明画面のみ利用できます。
 
 ## 利用環境
 
@@ -20,7 +20,7 @@ Xangiのチャット入力欄から、キーボードを開かずに日本語を
 | ブラウザ | Google Chrome。マイクの使用許可が必要です。ほかのブラウザは動作保証の対象外です。 |
 | 別端末からの接続 | サーバーと利用端末が同じTailscaleネットワーク（tailnet）に接続し、Tailscale ServeのHTTPS URLで開きます。 |
 | 音声認識 | ChromeのWeb Speech API（`SpeechRecognition` / `webkitSpeechRecognition`）を使用します。独自の認識サーバーは不要です。 |
-| Xangi本体 | `composer.input`対応版が必要です。拡張だけでは入力欄との連携は追加されません。 |
+| xangi本体 | `composer.input`対応版が必要です。拡張だけでは入力欄との連携は追加されません。 |
 
 Chromeでも、OS・端末・ブラウザの設定によって音声認識を利用できない場合があります。
 iPhone/iPadを含め、Chromeという名前だけで対応を保証するものではありません。
@@ -28,7 +28,7 @@ iPhone/iPadを含め、Chromeという名前だけで対応を保証するもの
 
 ## はじめて使うとき
 
-1. Xangiの拡張画面で、公開リポジトリ `https://github.com/airpocket-soundman/xangi-voice-input` を追加します。
+1. xangiの拡張画面で、公開リポジトリ `https://github.com/airpocket-soundman/xangi-voice-input` を追加します。
 2. 開いたセットアップ会話の案内に従い、必要な設定を確認・承認します。
 3. 別端末から使う場合はTailscaleへ接続し、案内された**HTTPS URLをChromeで**開きます。
 4. チャット入力欄のマイクを押し、Chromeのマイク使用許可を選びます。
@@ -49,16 +49,16 @@ Tailscale未導入の場合のインストール、ログイン、HTTPSの初回
 
 対応状況はブラウザとOSに依存します。Chromeであってもすべての環境で動作するとは限りません。
 音声はChromeの音声認識サービスへ送信される場合があります。オフラインでの認識を保証しません。
-この拡張とXangiサーバーは音声データを受信せず、音声アップロード用APIも提供しません。
+この拡張とxangiサーバーは音声データを受信せず、音声アップロード用APIも提供しません。
 
 ## インストール
 
-Xangiのセットアップエージェントから導入する場合は、`XANGI_SETUP.md`に沿って案内します。
+xangiのセットアップエージェントから導入する場合は、`XANGI_SETUP.md`に沿って案内します。
 エージェントが現在の環境を確認し、必要な場合はTailscaleのHTTPS設定を提案します。
 利用者は設定内容の確認、Tailscaleのログイン・HTTPS有効化、ブラウザのマイク許可を行います。
 拡張を有効にするだけでこれらの許可が自動付与されるわけではありません。
 
-Node.js 22以上、POSIXホスト（Linux/macOS）、`composer.input` 対応版Xangiが必要です。
+Node.js 22以上、POSIXホスト（Linux/macOS）、`composer.input` 対応版xangiが必要です。
 追加のnpm依存パッケージは不要です。
 
 ```sh
@@ -66,18 +66,18 @@ git clone https://github.com/airpocket-soundman/xangi-voice-input.git
 cd xangi-voice-input
 chmod +x scripts/xangi-extension
 xangi extension link "$PWD/xangi-extension.json"
-# 同じ実行中のXangiへ接続する環境（XANGI_TOOL_SERVER設定済み）で実行
+# 同じ実行中のxangiへ接続する環境（XANGI_TOOL_SERVER設定済み）で実行
 xangi extension start xangi-voice-input
 ```
 
-起動後はXangiの拡張管理画面から停止・起動できます。リンク時は自動起動が有効になります。
-サービスは127.0.0.1にだけ待ち受け、すべてのリクエストにXangiの管理用Bearer認証を要求します。
+起動後はxangiの拡張管理画面から停止・起動できます。リンク時は自動起動が有効になります。
+サービスは127.0.0.1にだけ待ち受け、すべてのリクエストにxangiの管理用Bearer認証を要求します。
 ブラウザにはBearerトークンを渡しません。
 
 ## HTTPS: Tailscale前提
 
 リモート利用のサポート対象は、同じtailnetの端末からTailscale ServeのHTTPS URLで接続する構成です。
-例えば、Xangiが127.0.0.1:18888で待ち受けているホストでは、管理者が次のように設定します。
+例えば、xangiが127.0.0.1:18888で待ち受けているホストでは、管理者が次のように設定します。
 
 ```sh
 tailscale serve --bg --https=18889 http://127.0.0.1:18888
@@ -88,7 +88,7 @@ Serveはtailnet内で使用し、Funnelによる外部公開は必要ありま�
 自己署名証明書や独自CAの導入は不要です。
 
 導入ガイドでは、接続済みのTailscale端末のDNS名と既存のServe設定を確認し、承認後にHTTPS入口を設定できます。
-手動で進める場合も、Xangiのホスト上で次の対話式コマンドを利用できます。転送先は実際の待受先に合わせてください。
+手動で進める場合も、xangiのホスト上で次の対話式コマンドを利用できます。転送先は実際の待受先に合わせてください。
 
 ```sh
 npm run setup:https -- --target http://127.0.0.1:18888
@@ -117,13 +117,13 @@ localhostでの開発や、ほかの有効なHTTPS接続を意図的に拒否す
 
 ## 構成とテスト
 
-`src/extension.mjs` はXangi管理下で静的な操作画面を配信します。
+`src/extension.mjs` はxangi管理下で静的な操作画面を配信します。
 `public/voice.js` がブラウザのWeb Speech APIを操作し、本体へテキストのスナップショットを渡します。
 本体の認識API実装や、独自の音声認識サーバーは不要です。
 
 ```sh
 npm test
-# composer.input対応のXangiチェックアウトで npm ci を済ませて実行:
+# composer.input対応のxangiチェックアウトで npm ci を済ませて実行:
 XANGI_CORE_PATH=/path/to/xangi XANGI_TEST_CHROMIUM=/path/to/chromium npm run test:browser
 ```
 

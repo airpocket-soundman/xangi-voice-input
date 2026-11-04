@@ -13,7 +13,7 @@ export function planHttps(target, status, config) {
   const upstream = new URL(target);
   if (upstream.protocol !== 'http:' || upstream.username || upstream.password ||
       upstream.pathname !== '/' || upstream.search || upstream.hash)
-    throw Error('転送先には、このホストのXangiのHTTP URL（パスなし）を指定してください。');
+    throw Error('転送先には、このホストのxangiのHTTP URL（パスなし）を指定してください。');
   const ownIPs = status.Self?.TailscaleIPs ?? [];
   if (!['localhost', '127.0.0.1', '[::1]', ...ownIPs].includes(upstream.hostname))
     throw Error('転送先はlocalhostまたはこのTailscale端末自身のIPに限定しています。');
@@ -23,7 +23,7 @@ export function planHttps(target, status, config) {
   if (!hostname || !/^[a-z0-9.-]+\.ts\.net$/i.test(hostname))
     throw Error('この端末のTailscale DNS名を取得できません。MagicDNSを確認してください。');
   const proxy = upstream.origin;
-  // Reuse only a private HTTPS endpoint whose entire root maps to this Xangi.
+  // Reuse only a private HTTPS endpoint whose entire root maps to this xangi.
   for (const [authority, web] of Object.entries(config.Web ?? {})) {
     const port = Number(authority.slice(authority.lastIndexOf(':') + 1));
     if (authority !== `${hostname}:${port}` || !config.TCP?.[port]?.HTTPS ||
@@ -47,7 +47,7 @@ export async function setupHttps({ target, yes = false, check = false, run = tai
   const plan = await inspect();
   console.log(JSON.stringify(plan, null, 2));
   if (check || !plan.args) return plan;
-  if (!yes && !(await confirm(`この端末のXangiを同じTailscaleネットワークへHTTPSで接続可能にします。\n${plan.url}\n設定しますか？ [y/N] `)))
+  if (!yes && !(await confirm(`この端末のxangiを同じTailscaleネットワークへHTTPSで接続可能にします。\n${plan.url}\n設定しますか？ [y/N] `)))
     return null;
   // Do not overwrite a listener added while the user was deciding.
   const current = await inspect();
@@ -67,7 +67,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const args = process.argv.slice(2);
     const targetIndex = args.indexOf('--target');
     if (targetIndex < 0 || !args[targetIndex + 1])
-      throw Error('Usage: node src/setup-https.mjs --target <Xangi HTTP URL> [--check | --yes]');
+      throw Error('Usage: node src/setup-https.mjs --target <xangi HTTP URL> [--check | --yes]');
     await setupHttps({ target: args[targetIndex + 1], yes: args.includes('--yes'),
       check: args.includes('--check'), confirm: async message => {
         if (!process.stdin.isTTY) throw Error('対話端末で実行するか、ユーザーの承認後に--yesを指定してください。');

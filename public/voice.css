@@ -15,19 +15,19 @@ button {
   align-items: center;
   justify-content: center;
   padding: 0;
-  width: 44px;
-  height: 44px;
+  width: var(--composer-button-size, 44px);
+  height: var(--composer-button-size, 44px);
   border: 0;
-  border-radius: 8px;
-  color: light-dark(#555, #ddd);
+  border-radius: var(--composer-button-radius, 8px);
+  color: var(--composer-foreground, light-dark(#787774, #aaa9a5));
   background: transparent;
   cursor: pointer;
 }
-button:hover {
-  background: light-dark(#eee, #333);
+button:not(:disabled):hover {
+  background: var(--composer-hover, light-dark(#37352f14, #ffffff12));
 }
 button:disabled {
-  opacity: 0.4;
+  opacity: var(--composer-disabled-opacity, 0.45);
   cursor: default;
 }
 button[aria-pressed='true'] {
@@ -36,10 +36,16 @@ button[aria-pressed='true'] {
 }
 svg {
   display: block;
-  transform: translateY(2px);
-  width: 16px;
-  height: 16px;
+  width: var(--composer-icon-size, 18px);
+  height: var(--composer-icon-size, 18px);
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: var(--composer-stroke-width, 1.7);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--composer-focus, #2383e2);
+  outline-offset: -2px;
 }

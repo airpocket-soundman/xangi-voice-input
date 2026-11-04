@@ -5,14 +5,14 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 
 const coreRoot = process.env.XANGI_CORE_PATH;
-if (!coreRoot) throw Error('Set XANGI_CORE_PATH to the Xangi checkout with composer.input support');
+if (!coreRoot) throw Error('Set XANGI_CORE_PATH to the xangi checkout with composer.input support');
 const requireCore = createRequire(pathToFileURL(resolve(coreRoot, 'package.json')));
 const {createServer} = await import(pathToFileURL(requireCore.resolve('vite')));
 const {default:react} = await import(pathToFileURL(requireCore.resolve('@vitejs/plugin-react')));
 const root = resolve(coreRoot, 'web-ui');
 
 // Test only. This harness renders the real ChatPane without starting an agent,
-// loading .env, or connecting to an installed Xangi service.
+// loading .env, or connecting to an installed xangi service.
 export async function createComposerPreview({
   port = 0,
   host = '127.0.0.1',
@@ -96,14 +96,14 @@ export async function createComposerPreview({
           return;
         }
         if (req.url?.split('?')[0] !== '/voice-test') return next();
-        const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Xangi 音声入力テスト</title>
+        const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>xangi 音声入力テスト</title>
           <style>.voice-preview{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);max-width:1000px;margin:auto}.voice-preview-header{padding:12px 16px;border-bottom:1px solid var(--border)}.voice-preview-header h1{font-size:18px;margin:0 0 6px}.voice-preview-header p{font-size:13px;margin:4px 0;color:var(--ink-secondary)}.voice-preview-body{min-height:0;display:grid}</style>
           </head><body><div id="root"></div><script type="module">
           import React from 'react';import {createRoot} from 'react-dom/client';import '/src/styles.css';import {ChatPane} from '/src/Chat.tsx';
           const noop=()=>{};window.__voicePreviewActive=true;
           function Preview(){const [enabled,setEnabled]=React.useState(true);window.__disableExtension=()=>setEnabled(false);const [session,setSession]=React.useState('voice-test');window.__voicePreviewSwitch=()=>setSession(s=>s==='voice-test'?'voice-other':'voice-test');return React.createElement('main',{className:'voice-preview'},
-            React.createElement('header',{className:'voice-preview-header'},React.createElement('h1',null,'Xangi 音声入力テスト'),React.createElement('p',null,'入力欄のマイクを押して日本語で話し、停止して下書きを確認してください。キーボードを開く必要はありません。'),React.createElement('p',null,'音声はブラウザの認識サービスへ送信される場合があります。この画面から実際のAIへは送信しません。')),
-            React.createElement('div',{className:'voice-preview-body'},React.createElement(ChatPane,{composerExtensions:enabled?[{id:'xangi-voice-input',displayName:'音声入力'}]:[],pane:{key:'voice-test',sessionId:session},active:true,config:{uploadAccept:null,uploadMaxBytes:67108864,allowedBackends:[],completionShowElapsed:true},refreshVersion:0,onFocus:noop,onClose:noop,onSessionChange:noop,onBusyChange:noop,onSessionsInvalidated:async()=>{},onComplete:noop,onAbortReady:noop})))}
+            React.createElement('header',{className:'voice-preview-header'},React.createElement('h1',null,'xangi 音声入力テスト'),React.createElement('p',null,'入力欄のマイクを押して日本語で話し、停止して下書きを確認してください。キーボードを開く必要はありません。'),React.createElement('p',null,'音声はブラウザの認識サービスへ送信される場合があります。この画面から実際のAIへは送信しません。')),
+            React.createElement('div',{className:'voice-preview-body'},React.createElement(ChatPane,{composerExtensions:enabled?[{id:'xangi-voice-input',displayName:'音声入力',path:'/composer/',permissions:['microphone']}]:[],pane:{key:'voice-test',sessionId:session},active:true,config:{uploadAccept:null,uploadMaxBytes:67108864,allowedBackends:[],completionShowElapsed:true},refreshVersion:0,onFocus:noop,onClose:noop,onSessionChange:noop,onBusyChange:noop,onSessionsInvalidated:async()=>{},onComplete:noop,onAbortReady:noop})))}
           createRoot(document.getElementById('root')).render(React.createElement(Preview));
           </script></body></html>`;
         res.setHeader('Content-Type', 'text/html; charset=utf-8');

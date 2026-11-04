@@ -6,13 +6,16 @@ const unavailable = !window.isSecureContext
     ? 'このブラウザでは音声入力を利用できません。'
     : '';
 let configuration, session;
+const compatible = (message) =>
+  Array.isArray(message.capabilities) && message.capabilities.includes('draft.snapshot');
 const post = (message) =>
   parent.postMessage(
     { schemaVersion: 1, contextId: configuration?.contextId, ...message },
     location.origin
   );
 const render = () => {
-  button.disabled = !configuration || configuration.disabled || Boolean(unavailable);
+  button.disabled =
+    !configuration || !compatible(configuration) || configuration.disabled || Boolean(unavailable);
   button.setAttribute('aria-pressed', String(Boolean(session)));
   button.setAttribute('aria-label', session ? '音声入力を停止' : '音声入力を開始');
   button.title = unavailable || (session ? '音声入力を停止' : '音声入力を開始');
@@ -65,11 +68,39 @@ window.addEventListener('message', (event) => {
     return;
   if (configuration?.contextId !== m.contextId || m.disabled) cancel();
   configuration = m;
+  const appearance = m.appearance;
+  if (appearance && typeof appearance === 'object') {
+    if (appearance.colorScheme === 'light' || appearance.colorScheme === 'dark')
+      document.documentElement.style.colorScheme = appearance.colorScheme;
+    const properties = {
+      foreground: ['--composer-foreground', 'color'],
+      hoverBackground: ['--composer-hover', 'background-color'],
+      focusColor: ['--composer-focus', 'color'],
+      buttonSize: ['--composer-button-size', 'width'],
+      iconSize: ['--composer-icon-size', 'width'],
+      strokeWidth: ['--composer-stroke-width', 'stroke-width'],
+      borderRadius: ['--composer-button-radius', 'border-radius'],
+      disabledOpacity: ['--composer-disabled-opacity', 'opacity'],
+    };
+    for (const [key, [variable, property]] of Object.entries(properties)) {
+      const value = appearance[key];
+      if (typeof value === 'string' && CSS.supports(property, value))
+        document.documentElement.style.setProperty(variable, value);
+    }
+  }
   render();
+  if (!compatible(m)) {
+    cancel();
+    post({
+      type: 'xangi.composer.availability',
+      message: '入力欄拡張に対応したxangiへ更新してください。',
+    });
+    return;
+  }
   post({ type: 'xangi.composer.availability', message: unavailable });
 });
 button.addEventListener('click', () => {
-  if (!configuration || configuration.disabled || unavailable) return;
+  if (!configuration || !compatible(configuration) || configuration.disabled || unavailable) return;
   if (session) {
     const s = session;
     if (s.stopping) return;
